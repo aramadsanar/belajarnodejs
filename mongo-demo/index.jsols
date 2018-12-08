@@ -1,0 +1,57 @@
+const mongoose = require('mongoose');
+
+
+
+
+mongoose.connect('mongodb://localhost/mongo-exercises')
+    .then(() => {
+        console.log('connected to mongodb')
+    })
+    .catch(err => console.error('cant connect to mongodb', err))
+
+const courseSchema = new mongoose.Schema({
+    name: String,
+    author: String,
+    tags: [String],
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    isPublished: Boolean
+})
+
+//classes, objects
+//course, nodeCourse
+
+const Course = mongoose.model('Course', courseSchema);
+
+const course = new Course({
+    name: 'NodeJS Course',
+    author: 'Mosh',
+    tags: ['node', 'backend'],
+    isPublished: true
+});
+
+async function x() {
+    const result = await course.save();
+    console.log(result['_id'])
+}
+
+async function queryData() {
+    const result = await Course.find({author: 'Mosh', isPublished: true})
+        .limit(10)
+        .select({name: 1, author: 1})
+    console.log(result[0]['_doc']['name'], result[0]['_doc']['author'])
+}
+
+async function getCourses() {
+    let x = await Course.find({
+        price: {
+            $gte: 10
+        }
+    })
+}
+
+
+
+queryData()
